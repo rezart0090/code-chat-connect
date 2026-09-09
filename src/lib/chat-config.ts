@@ -1,5 +1,5 @@
 /**
- * Connection settings for the external Laravel API and the WebSocket server.
+ * Connection settings for the external Next.js API and the WebSocket server.
  * Values can be baked in via env vars, or set by the user at runtime and kept
  * in localStorage (handy while the server is still being deployed to Render).
  */

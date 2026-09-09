@@ -1,6 +1,6 @@
 import { getApiBase, getToken, type ChatUser } from "./chat-config";
 
-/** Thrown when the Laravel server is unreachable (down, sleeping, or not set). */
+/** Thrown when the API server is unreachable (down, sleeping, or not set). */
 export class ServerDownError extends Error {
   constructor(message = "سرور در دسترس نیست") {
     super(message);
