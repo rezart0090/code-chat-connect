@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getApiBase, getWsUrl, saveEndpoints } from "@/lib/chat-config";
 
-/** Lets the operator point the app at their Laravel API and socket server. */
+/** Lets the operator point the app at their Next.js API and socket server. */
 export function EndpointSettings({ onSaved }: { onSaved?: () => void }) {
   const [open, setOpen] = useState(false);
   const [api, setApi] = useState("");
@@ -24,7 +24,7 @@ export function EndpointSettings({ onSaved }: { onSaved?: () => void }) {
       {open && (
         <div className="mt-3 space-y-3 rounded-xl border border-border bg-card/70 p-4">
           <label className="block space-y-1.5">
-            <span className="text-xs text-muted-foreground">آدرس سرور لاراول</span>
+            <span className="text-xs text-muted-foreground">آدرس سرور API</span>
             <input
               dir="ltr"
               className="field font-mono text-xs"
