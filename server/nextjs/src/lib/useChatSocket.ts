@@ -1,19 +1,13 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getToken, getWsUrl } from "./chat-config";
-import type { ChatMessage } from "./chat-api";
+import { getToken, getWsUrl, type ChatMessage } from "./client";
 
 export type SocketStatus = "connecting" | "online" | "offline";
 
-type Options = {
-  enabled: boolean;
-  onMessage: (message: ChatMessage) => void;
-};
+type Options = { enabled: boolean; onMessage: (message: ChatMessage) => void };
 
-/**
- * Keeps a WebSocket open to the chat socket server and retries with a
- * capped backoff. While it cannot connect the status stays "offline" so the
- * UI can ask the customer to wait.
- */
+/** Keeps a WebSocket open to the socket server, retrying with capped backoff. */
 export function useChatSocket({ enabled, onMessage }: Options) {
   const [status, setStatus] = useState<SocketStatus>("connecting");
   const [retryIn, setRetryIn] = useState(0);
@@ -51,10 +45,11 @@ export function useChatSocket({ enabled, onMessage }: Options) {
 
     socket.onmessage = (event) => {
       try {
-        const payload = JSON.parse(String(event.data)) as
-          | { type: "message"; message: ChatMessage }
-          | { type: string };
-        if (payload && "message" in payload && payload.type === "message") {
+        const payload = JSON.parse(String(event.data)) as {
+          type: string;
+          message?: ChatMessage;
+        };
+        if (payload.type === "message" && payload.message) {
           onMessageRef.current(payload.message);
         }
       } catch {
@@ -79,7 +74,7 @@ export function useChatSocket({ enabled, onMessage }: Options) {
         clearInterval(tick);
         connect();
       }, delay * 1000);
-      timersRef.current.push(t as unknown as ReturnType<typeof setTimeout>);
+      timersRef.current.push(t);
     }
   }, []);
 
@@ -95,13 +90,6 @@ export function useChatSocket({ enabled, onMessage }: Options) {
     };
   }, [enabled, connect]);
 
-  const send = useCallback((body: string) => {
-    const socket = socketRef.current;
-    if (!socket || socket.readyState !== WebSocket.OPEN) return false;
-    socket.send(JSON.stringify({ type: "message", body }));
-    return true;
-  }, []);
-
   const reconnectNow = useCallback(() => {
     attemptRef.current = 0;
     setRetryIn(0);
@@ -109,5 +97,5 @@ export function useChatSocket({ enabled, onMessage }: Options) {
     connect();
   }, [connect]);
 
-  return { status, retryIn, send, reconnectNow };
+  return { status, retryIn, reconnectNow };
 }

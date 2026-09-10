@@ -2,7 +2,7 @@
  * Chat socket server (deploy to Render as a Node web service).
  *
  * - Clients connect with  wss://host?token=<sanctum token>
- * - Laravel broadcasts saved messages by POSTing to /broadcast with the
+ * - The Next.js API broadcasts saved messages by POSTing to /broadcast with the
  *   shared SOCKET_SECRET header.
  */
 import http from "node:http";
@@ -10,7 +10,7 @@ import { WebSocketServer } from "ws";
 
 const PORT = process.env.PORT || 3000;
 const SOCKET_SECRET = process.env.SOCKET_SECRET || "";
-const LARAVEL_URL = (process.env.LARAVEL_URL || "").replace(/\/+$/, "");
+const API_URL = (process.env.API_URL || "").replace(/\/+$/, "");
 
 const clients = new Set();
 
@@ -55,11 +55,11 @@ const server = http.createServer(async (req, res) => {
 
 const wss = new WebSocketServer({ server });
 
-/** Ask Laravel who owns this token. Returns null when invalid or server down. */
+/** Ask the Next.js API who owns this token. Returns null when invalid or server down. */
 async function resolveUser(token) {
-  if (!LARAVEL_URL || !token) return null;
+  if (!API_URL || !token) return null;
   try {
-    const res = await fetch(`${LARAVEL_URL}/api/me`, {
+    const res = await fetch(`${API_URL}/api/me`, {
       headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
     });
     if (!res.ok) return null;
