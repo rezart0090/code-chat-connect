@@ -14,11 +14,11 @@ services:
     envVars:
       - key: SOCKET_SECRET
         generateValue: true
-      - key: LARAVEL_URL
+      - key: API_URL
         sync: false
 
   - type: web
-    name: chat-api
+    name: chat-app
     runtime: node
     rootDir: nextjs
     plan: free
@@ -36,5 +36,5 @@ services:
         sync: false
       - key: SOCKET_SECRET
         sync: false
-      - key: FRONTEND_ORIGIN
+      - key: NEXT_PUBLIC_SOCKET_URL
         sync: false
